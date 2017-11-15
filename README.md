@@ -1,5 +1,5 @@
-## CSV Processing
-# Rong-Hao Liang r.liang@tue.nl
+# CSV Processing
+by Rong-Hao Liang r.liang@tue.nl
 A set of processing examples library for CSV data acquisition and manipulation.
 Processing: https://processing.org/
 (last updated: Nov. 15, 2017) 
