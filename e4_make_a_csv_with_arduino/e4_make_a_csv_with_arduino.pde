@@ -1,0 +1,108 @@
+//*********************************************
+// CSV Processing
+// e4_make_a_csv_with_arduino
+// Rong-Hao Liang: r.liang@tue.nl
+//*********************************************
+// S for saving the file
+// [SPACE] for refreshing the data
+
+import processing.serial.*;
+Serial port; 
+
+int[] rawData;
+int sensorNum = 1;
+int dataNum = 50;
+
+Table csvData;
+String fileName = "data/testData.csv";
+boolean b_saveCSV = false;
+
+int label = 0;
+
+void setup() {
+  size(500, 500);
+
+  //Initiate the dataList and set the header of table
+  csvData = new Table();
+  csvData.addColumn("x");
+  //add more columns here
+
+  //Initiate the serial port
+  rawData = new int[sensorNum];
+  for (int i = 0; i < Serial.list().length; i++) println("[", i, "]:", Serial.list()[i]);
+  String portName = Serial.list()[Serial.list().length-1];//check the printed list
+  port = new Serial(this, portName, 115200);
+  port.bufferUntil('\n'); // arduino ends each data packet with a carriage return 
+  port.clear();           // flush the Serial buffer
+}
+
+void draw() {
+  background(255);
+
+  for (int i = 0; i < csvData.getRowCount(); i++) { 
+    //read the values from the file
+    TableRow row = csvData.getRow(i);
+    float x = row.getFloat("x");
+    // add more features here if you have
+
+    //form a feature array
+    float[] features = { x }; //form an array of input features
+
+    //draw the data on the Canvas: 
+    //Note: the pin number is used as the label instead
+    drawDataPoint1D(i, features);
+  }
+
+  if (b_saveCSV) {
+    //Save the table to the file folder
+    saveTable(csvData, fileName); //save table as CSV file
+    println("Saved as: ", fileName);
+
+    //reset b_saveCSV;
+    b_saveCSV = false;
+  }
+}
+
+void serialEvent(Serial port) {   
+  String inData = port.readStringUntil('\n');  // read the serial string until seeing a carriage return
+  if (inData.charAt(0) == 'A') {  
+    rawData[0] = int(trim(inData.substring(1)));
+    //add a new row of data
+    if (csvData.getRowCount() < dataNum) {
+      //add a row with new data 
+      TableRow newRow = csvData.addRow();
+      newRow.setFloat("x", rawData[0]);
+      println(csvData.getRowCount(),rawData[0]);
+    }
+    return;
+  }
+}
+
+void keyPressed() {
+  if (key == 'S' || key == 's') {
+    b_saveCSV = true;
+  }
+  if (key == ' ') {
+    csvData.clearRows();
+  }
+}
+
+//functions for drawing the data
+void drawDataPoint1D(int _i, float[] _features) { 
+  float pD = width/dataNum;
+  float pX = map(((float)_i+0.5)/(float)dataNum, 0, 1, 0, width);
+  float[] pY = new float[_features.length];
+  for (int j = 0; j < _features.length; j++) pY[j] = map(_features[j], 0, 1024, 0, height) ; 
+  pushStyle();
+  textSize(pD*0.8);
+  textAlign(CENTER, CENTER);
+  for (int j = 0; j < _features.length; j++) {
+    stroke(0);
+    fill((j==0?255:0),(j==1?255:0),(j==2?255:0));
+    ellipse(pX, pY[j], pD, pD);
+    noStroke();
+    fill(0);
+    text(j, pX+0.5, pY[j]-1.5);
+  }
+  popStyle();
+}
