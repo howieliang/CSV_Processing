@@ -74,6 +74,7 @@ void keyPressed() {
   }
   if (key == ' ') {
     csvData.clearRows();
+    label = 0;
   }
 }
 
