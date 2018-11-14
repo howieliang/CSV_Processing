@@ -1,7 +1,7 @@
-#define PIN_NUM 1
+#define PIN_NUM 3
 int  data[PIN_NUM]; //data array
-char dataID[PIN_NUM] = {'A'}; //data label
-int  pinID[PIN_NUM]  = {A0}; //corresponding pins
+char dataID[PIN_NUM] = {'A','B','C'}; //data label
+int  pinID[PIN_NUM]  = {A0, A1, A2}; //corresponding pins
 int  sampleRate = 100; //samples per second
 
 long timer = micros(); //timer

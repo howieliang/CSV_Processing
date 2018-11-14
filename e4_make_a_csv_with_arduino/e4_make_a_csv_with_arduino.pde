@@ -30,7 +30,8 @@ void setup() {
   //Initiate the serial port
   rawData = new int[sensorNum];
   for (int i = 0; i < Serial.list().length; i++) println("[", i, "]:", Serial.list()[i]);
-  String portName = Serial.list()[Serial.list().length-1];//check the printed list
+  String portName = Serial.list()[Serial.list().length-1];//MAC: check the printed list
+  //String portName = Serial.list()[0];//WINDOWS: check the printed list
   port = new Serial(this, portName, 115200);
   port.bufferUntil('\n'); // arduino ends each data packet with a carriage return 
   port.clear();           // flush the Serial buffer
@@ -49,7 +50,7 @@ void draw() {
     float[] features = { x }; //form an array of input features
 
     //draw the data on the Canvas: 
-    //Note: the pin number is used as the label instead
+    //Note: the row index is used as the label instead
     drawDataPoint1D(i, features);
   }
 
@@ -72,7 +73,6 @@ void serialEvent(Serial port) {
       //add a row with new data 
       TableRow newRow = csvData.addRow();
       newRow.setFloat("x", rawData[0]);
-      println(csvData.getRowCount(),rawData[0]);
     }
     return;
   }
@@ -94,15 +94,10 @@ void drawDataPoint1D(int _i, float[] _features) {
   float[] pY = new float[_features.length];
   for (int j = 0; j < _features.length; j++) pY[j] = map(_features[j], 0, 1024, 0, height) ; 
   pushStyle();
-  textSize(pD*0.8);
-  textAlign(CENTER, CENTER);
   for (int j = 0; j < _features.length; j++) {
-    stroke(0);
-    fill((j==0?255:0),(j==1?255:0),(j==2?255:0));
-    ellipse(pX, pY[j], pD, pD);
     noStroke();
-    fill(0);
-    text(j, pX+0.5, pY[j]-1.5);
+    fill(255,0,0);
+    ellipse(pX, pY[j], pD, pD);
   }
   popStyle();
 }
